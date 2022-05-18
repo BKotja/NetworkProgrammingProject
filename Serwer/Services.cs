@@ -28,11 +28,7 @@ namespace Server
                     return Chat.Msg(_args[2], _args[3], _message[1], ref Messages);
                 case "get":
                     List<Message> userMessages = Chat.Get(_args[2], Messages);
-                    return userMessages.Count > 0 ? string.Join(" | ", userMessages.Select(m => m.ToString())) : "There is no messages for this user";
-                case "getnow":
-                //return "";
-                case "who":
-                //return "";
+                    return userMessages.Count > 0 ? string.Join("; ", userMessages.Select(m => m.ToString())) + "\n" : "There is no messages for this user\n";
                 default:
                     return "Unknown command";
             }

@@ -39,7 +39,7 @@ namespace Common
                 _messages.Add(new Message(nickname, myNickname, message));
             }
 
-            return string.Format("Message has been sent from {0} to {1}", myNickname, nicknames);
+            return string.Format("Message has been sent from {0} to {1}\n", myNickname, nicknames);
         }
 
         public static List<Message> Get(string nickname, List<Message> _messages)
