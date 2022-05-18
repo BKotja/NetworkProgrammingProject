@@ -56,5 +56,11 @@
       <Name>Common</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="test.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Downloaded\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -13,7 +14,7 @@ namespace Client
 
         public Client() { }
 
-        private void Ping(Medium medium, string[] message)
+        private void PingCommander(Medium medium, string[] message)
         {
             int pingCount = 1;
             string request = string.Empty;
@@ -55,6 +56,49 @@ namespace Client
             Console.WriteLine(response);
         }
 
+        private void FileCommander(Medium medium, string[] message)
+        {
+            string response = string.Empty;
+            string request = string.Empty;
+
+            switch (message[1])
+            {
+                case "list":
+                    request = string.Format("{0} {1}", message[0], message[1]);
+                    break;
+                case "get":
+                    request = string.Format("{0} {1} {2}", message[0], message[1], message[2]);
+                    break;
+                case "put":
+                    string filePath = string.Format("{0}", message[3]);
+                    if (!File.Exists(filePath))
+                    {
+                        Console.WriteLine("File not found\n");
+                        return;
+                    }
+                    byte[] fileBytes = File.ReadAllBytes(filePath);
+                    string fileBase64 = Convert.ToBase64String(fileBytes);
+                    request = string.Format("{0} {1} {2} {3}", message[0], message[1], message[2], fileBase64);
+                    break;
+                default:
+                    return;
+            }
+
+            response = medium.QA(request + "\n");
+
+            if (message[1] == "get" && response != "404\n")
+            {
+                string fileServerPath = string.Format("{0}\\{1}", message[3], message[2]);
+                File.WriteAllBytes(fileServerPath, Convert.FromBase64String(response.Split('\n')[0]));
+                Console.WriteLine("File downloaded successfully");
+
+            }
+            else
+                Console.WriteLine(response);
+
+
+        }
+
         static void Main()
         {
             Console.WriteLine("Client");
@@ -94,41 +138,18 @@ namespace Client
                 switch (strMessageSplitted[0])
                 {
                     case "ping":
-                        _client.Ping(medium, strMessageSplitted);
+                        _client.PingCommander(medium, strMessageSplitted);
                         break;
                     case "chat":
                         _client.ChatCommander(medium, strMessage);
                         break;
+                    case "file":
+                        _client.FileCommander(medium, strMessageSplitted);
+                        break;
                     case "exit":
-                        //stream.Close();
                         return;
                 }
             };
         }
     }
 }
-
-//TcpClient tcpClient = new TcpClient("127.0.0.1", Config.PORT);
-//NetworkStream stream = tcpClient.GetStream();
-
-//string message = "ping 1024\n";
-//byte[] data = Encoding.ASCII.GetBytes(message);
-
-//for (int i = 0; i < 10; i++)
-//{
-//    stream.Write(data, 0, data.Length);
-//    Console.Write("Wysłane: {0}", message);
-
-//    byte[] msg = new byte[256];
-//    int lenght;
-//    string response;
-//    do
-//    {
-//        lenght = stream.Read(msg, 0, msg.Length);
-//        response = Encoding.ASCII.GetString(msg, 0, lenght);
-//        Console.WriteLine("Pobrane: " + response);
-
-//    } while (stream.DataAvailable);
-//}
-
-//tcpClient.Close();

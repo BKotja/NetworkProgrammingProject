@@ -34,4 +34,25 @@ namespace Server
             }
         }
     }
+
+    public class FileServiceModule : IServiceModule
+    {
+        public string AnswerCommand(string command)
+        {
+            string[] _args = command.Split(' ');
+            
+            switch (_args[1].Split('\n')[0])
+            {
+                case "list":
+                    return Files.List();
+                case "get":
+                    return Files.Get(_args[2].Split('\n')[0]);
+                case "put":
+                    return Files.Put(_args[2], _args[3].Split('\n')[0]);
+                default:
+                    return "Unknown command";
+            }
+        }
+    }
+
 }
