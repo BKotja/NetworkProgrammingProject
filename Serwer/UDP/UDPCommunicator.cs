@@ -29,22 +29,27 @@ namespace Server.UDP
                 {
                     groupEP = new IPEndPoint(IPAddress.Any, Config.PORT_UDP);
 
-                    byte[] bytes;
+                    byte[] bytes = null;
                     string data = "";
-                    bytes = _client.Receive(ref groupEP);
 
                     try
                     {
-                        data = Encoding.ASCII.GetString(bytes);
-                        Console.Write(string.Format("{0} - UDP | get: {1}", groupEP.Address, data));
+                        bytes = _client.Receive(ref groupEP);
 
-                        byte[] msg = Encoding.ASCII.GetBytes(onCommand(data));
-                        _client.Send(msg, msg.Length, groupEP);
+                        try
+                        {
+                            data = Encoding.ASCII.GetString(bytes);
+                            Console.Write(string.Format("{0} - UDP | get: {1}", groupEP.Address, data));
+
+                            byte[] msg = Encoding.ASCII.GetBytes(onCommand(data));
+                            _client.Send(msg, msg.Length, groupEP);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(string.Format("{0} - {1}", groupEP.Address, ex.Message));
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(string.Format("{0} - {1}", groupEP.Address, ex.Message));
-                    }
+                    catch (Exception e) { };
                 }
                 Stop();
             });

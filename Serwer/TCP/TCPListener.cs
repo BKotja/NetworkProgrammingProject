@@ -25,10 +25,14 @@ namespace Server.TCP
             {
                 while (isRunning)
                 {
-                    TcpClient _client = _tcpListener.AcceptTcpClient();
-                    TCPCommunicator _communicator = new TCPCommunicator(_client);
-                    onConnect(_communicator);
-                }
+                    try
+                    {
+                        TcpClient _client = _tcpListener.AcceptTcpClient();
+                        TCPCommunicator _communicator = new TCPCommunicator(_client);
+                        onConnect(_communicator);
+                    }
+                    catch (Exception e) { };
+                }               
             });
 
             _thread.Start();
