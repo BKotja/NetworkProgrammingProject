@@ -1,4 +1,6 @@
-﻿using Server.TCP;
+﻿using Server.RS232;
+using Server.FilesProtocol;
+using Server.TCP;
 using Server.UDP;
 using System;
 using System.Collections.Generic;
@@ -61,7 +63,7 @@ namespace Server
             string _serviceParams = string.Join(" ", service.Skip(1));
             IServiceModule serviceModule = null;
             _services.TryGetValue(_serviceName, out serviceModule);
-
+            
             if (serviceModule != null)
                 return serviceModule.AnswerCommand(string.Format("{0} {1}", _serviceName, _serviceParams));
             else
@@ -79,6 +81,10 @@ namespace Server
 
             switch (command[1])
             {
+                case "start-all":
+                    StartService("all");
+                    StartMedium("all");
+                    break;
                 case "start-service":
                     StartService(command[2]);
                     break;
@@ -110,6 +116,11 @@ namespace Server
                 case "file":
                     AddService("file", new FileServiceModule());
                     break;
+                case "all":
+                    AddService("ping", new PingPongServiceModule());
+                    AddService("chat", new ChatServiceModule());
+                    AddService("file", new FileServiceModule());
+                    break;
                 default:
                     Console.WriteLine("Unknown service");
                     break;
@@ -137,6 +148,18 @@ namespace Server
                 case "udp":
                     AddListener(new UDPListener());
                     break;
+                case "files":
+                    AddListener(new FilesProtocolListener());
+                    break;
+                case "RS232":
+                    AddListener(new RS232Listener());
+                    break;
+                case "all":
+                    AddListener(new TCPListener());
+                    AddListener(new UDPListener());
+                    AddListener(new FilesProtocolListener());
+                    AddListener(new RS232Listener());
+                    break;
                 default:
                     Console.WriteLine("Unknown service");
                     break;
@@ -148,7 +171,7 @@ namespace Server
             switch (mediumName)
             {
                 case "tcp":
-                    RemoveListener(_listeners.Where(listener=>listener is TCPListener).First());
+                    RemoveListener(_listeners.Where(listener => listener is TCPListener).First());
                     break;
                 case "udp":
                     RemoveListener(_listeners.Where(listener => listener is UDPListener).First());

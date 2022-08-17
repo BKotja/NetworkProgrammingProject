@@ -1,10 +1,13 @@
 ﻿using Common;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Ports;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Client
@@ -69,4 +72,66 @@ namespace Client
             return response;
         }
     }
+
+    public class MediumFiles : Medium
+    {
+        private string _fileName;
+
+        public MediumFiles(string fileName)
+        {
+            _fileName = fileName;
+        }
+
+        public override string QA(string request)
+        {
+            File.WriteAllText(_fileName, request);
+
+            Thread.Sleep(10);
+            StreamReader streamReader = new StreamReader(_fileName.Replace(".txt", ".data"));
+            string result = streamReader.ReadToEnd() + "\n";
+            streamReader.Close();
+            return result;
+        }
+    }
+
+    public class MediumRS232 : Medium
+    {
+        private SerialPort _serialPort;
+
+        public MediumRS232(SerialPort serialPort)
+        {
+            _serialPort = serialPort;
+        }
+
+        public override string QA(string request)
+        {
+            string response = "";
+            if (!_serialPort.IsOpen)
+            {
+                _serialPort.Open();
+            }
+
+            _serialPort.Write(request);
+
+            while (response.Equals(string.Empty))
+            {
+                response = _serialPort.ReadExisting();
+            }
+            return response;
+        }
+    }
+
+    //public class MediumNetRemoting : Medium
+    //{
+    //    private NetRemotingUtil netRemotingUtil;
+
+    //    public MediumNetRemoting(NetRemotingUtil netRemotingUtil)
+    //    {
+    //        this.netRemotingUtil = netRemotingUtil;
+    //    }
+    //    public override string QA(string request)
+    //    {
+    //        return netRemotingUtil.Command(request);
+    //    }
+    //}
 }

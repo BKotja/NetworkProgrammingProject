@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Ports;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -109,7 +110,7 @@ namespace Client
 
             Medium medium = null;
 
-            Console.WriteLine("Choose protocol (tpc/udp):");
+            Console.WriteLine("Choose protocol (tpc/udp/files/rs232):");
             while (flag)
             {
                 strMessageSplitted = Console.ReadLine().Split(' ');
@@ -124,6 +125,14 @@ namespace Client
                     case "udp":
                         UdpClient udpClient = new UdpClient(Config.SERVER_IP, Config.PORT_UDP);
                         medium = new MediumUDP(udpClient);
+                        flag = false;
+                        break;
+                    case "files":
+                        medium = new MediumFiles(Config.SERVER_FILES_PROTOCOL_DIR + "\\file.txt");
+                        flag = false;
+                        break;
+                    case "rs232":
+                        medium = new MediumRS232(new SerialPort(Config.CLIENT_SERIAL_PORT, 9600, Parity.None, 8, StopBits.One));
                         flag = false;
                         break;
                     case "exit":
