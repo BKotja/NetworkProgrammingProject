@@ -15,6 +15,7 @@ namespace Common
         public const string SERVER_FILES_DIR = "E:\\__s2\\2rok\\progsieckom\\KS\\Serwer\\Serwer\\Files";
         public const string SERVER_FILES_PROTOCOL_DIR = "E:\\__s2\\2rok\\progsieckom\\KS\\Serwer\\Serwer\\FilesProtocolDir";
         public const string SERVER_SERIAL_PORT = "COM3";
-        public const string  CLIENT_SERIAL_PORT = "COM4";
+        public const string CLIENT_SERIAL_PORT = "COM4";
+        public const int DOTNETREMOTING_PORT = 8888;
     }
 }

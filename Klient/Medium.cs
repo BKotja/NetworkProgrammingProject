@@ -97,10 +97,20 @@ namespace Client
     public class MediumRS232 : Medium
     {
         private SerialPort _serialPort;
+        private string _newData = "";
 
         public MediumRS232(SerialPort serialPort)
         {
             _serialPort = serialPort;
+            _serialPort.Open();
+            _serialPort.DataReceived += new SerialDataReceivedEventHandler(Handler);
+        }
+
+        private void Handler(object sender, SerialDataReceivedEventArgs e)
+        {
+            SerialPort serialPort = (SerialPort)sender;
+
+            _newData = serialPort.ReadLine();
         }
 
         public override string QA(string request)
@@ -113,25 +123,25 @@ namespace Client
 
             _serialPort.Write(request);
 
-            while (response.Equals(string.Empty))
-            {
-                response = _serialPort.ReadExisting();
+            while (response.Equals(string.Empty)) {
+                response = _newData;
             }
+
             return response;
         }
     }
 
-    //public class MediumNetRemoting : Medium
-    //{
-    //    private NetRemotingUtil netRemotingUtil;
+    public class MediumDotNetRemoting : Medium
+    {
+        private DotNetRemotingMarshalingObj _dotNetRemotingMarshaling;
 
-    //    public MediumNetRemoting(NetRemotingUtil netRemotingUtil)
-    //    {
-    //        this.netRemotingUtil = netRemotingUtil;
-    //    }
-    //    public override string QA(string request)
-    //    {
-    //        return netRemotingUtil.Command(request);
-    //    }
-    //}
+        public MediumDotNetRemoting(DotNetRemotingMarshalingObj dotNetRemotingMarshaling)
+        {
+            _dotNetRemotingMarshaling = dotNetRemotingMarshaling;
+        }
+        public override string QA(string request)
+        {
+            return _dotNetRemotingMarshaling.Generate(request);
+        }
+    }
 }

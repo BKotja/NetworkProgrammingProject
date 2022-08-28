@@ -11,6 +11,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Server.DotNetRemoting;
 
 namespace Server
 {
@@ -154,11 +155,15 @@ namespace Server
                 case "RS232":
                     AddListener(new RS232Listener());
                     break;
+                case ".netr":
+                    AddListener(new DotNetRemotingListener());
+                    break;
                 case "all":
                     AddListener(new TCPListener());
                     AddListener(new UDPListener());
                     AddListener(new FilesProtocolListener());
                     AddListener(new RS232Listener());
+                    AddListener(new DotNetRemotingListener());
                     break;
                 default:
                     Console.WriteLine("Unknown service");

@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace Server.RS232
 {
-    //TODO to fix (maybe threads?)
     public class RS232Communicator : ICommunicator
     {
         private SerialPort _serialPort;

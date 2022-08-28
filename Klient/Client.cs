@@ -110,7 +110,7 @@ namespace Client
 
             Medium medium = null;
 
-            Console.WriteLine("Choose protocol (tpc/udp/files/rs232):");
+            Console.WriteLine("Choose protocol (tpc/udp/files/rs232/.netr):");
             while (flag)
             {
                 strMessageSplitted = Console.ReadLine().Split(' ');
@@ -133,6 +133,11 @@ namespace Client
                         break;
                     case "rs232":
                         medium = new MediumRS232(new SerialPort(Config.CLIENT_SERIAL_PORT, 9600, Parity.None, 8, StopBits.One));
+                        flag = false;
+                        break;
+                    case ".netr":
+                        medium = new MediumDotNetRemoting((DotNetRemotingMarshalingObj)Activator.GetObject(
+                            typeof(DotNetRemotingMarshalingObj), string.Format("tcp://{0}:{1}/command", Config.SERVER_IP, Config.DOTNETREMOTING_PORT)));
                         flag = false;
                         break;
                     case "exit":
